@@ -114,14 +114,14 @@ app.listen(PORT, () => {
   console.log(`📧 Mode: ${NODE_ENV}`);
   
   // Setup Telegram Bot in production mode (webhooks)
-/*   if (NODE_ENV === 'production') {
+  if (NODE_ENV === 'production') {
     try {
       setupTelegramBot(app);
     } catch (error) {
       console.error('Failed to setup Telegram bot:', error);
     }
   }
- */});
+});
 
 export default app;
 
