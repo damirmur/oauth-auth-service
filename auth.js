@@ -256,7 +256,7 @@ export function getOAuthUrl(provider) {
   const config = providers[provider];
   if (!config) return null;
   
-  const redirectUri = `${process.env.BASE_URL || 'http://localhost:3000'}/auth/${provider}/callback`;
+  const redirectUri = `${process.env.BASE_URL || 'http://localhost:3001'}/auth/${provider}/callback`;
   const state = generateId();
   
   const params = new URLSearchParams({
@@ -282,7 +282,7 @@ export function getOAuthUrl(provider) {
 // Exchange code for tokens (Google, Facebook, VK)
 export async function exchangeCodeForToken(provider, code) {
   const config = providers[provider];
-  const redirectUri = `${process.env.BASE_URL || 'http://localhost:3000'}/auth/${provider}/callback`;
+  const redirectUri = `${process.env.BASE_URL || 'http://localhost:3001'}/auth/${provider}/callback`;
   
   const params = new URLSearchParams({
     client_id: config.clientId,

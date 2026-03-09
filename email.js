@@ -108,7 +108,7 @@ export async function sendEmail(to, subject, html, text = null) {
 // Send verification email
 export async function sendVerificationEmail(email, name, code) {
   const subject = 'Подтверждение email';
-  const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${code}?email=${encodeURIComponent(email)}`;
+  const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3001'}/verify/${code}?email=${encodeURIComponent(email)}`;
   
   const html = `
     <!DOCTYPE html>
@@ -146,7 +146,7 @@ export async function sendVerificationEmail(email, name, code) {
 // Send linking verification email
 export async function sendLinkingEmail(email, name, code, provider) {
   const subject = 'Привязка аккаунта';
-  const linkUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/link/confirm?email=${encodeURIComponent(email)}&code=${code}`;
+  const linkUrl = `${process.env.BASE_URL || 'http://localhost:3001'}/link/confirm?email=${encodeURIComponent(email)}&code=${code}`;
   
   const html = `
     <!DOCTYPE html>
@@ -185,7 +185,7 @@ export async function sendLinkingEmail(email, name, code, provider) {
 // Send password reset email
 export async function sendPasswordResetEmail(email, name, code) {
   const subject = 'Восстановление пароля';
-  const resetUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/reset-password?code=${code}&email=${encodeURIComponent(email)}`;
+  const resetUrl = `${process.env.BASE_URL || 'http://localhost:3001'}/reset-password?code=${code}&email=${encodeURIComponent(email)}`;
   
   const html = `
     <!DOCTYPE html>

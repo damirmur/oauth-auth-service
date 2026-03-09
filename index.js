@@ -8,6 +8,7 @@ import authRouter from './routes/auth.js';
 import adminRouter from './routes/admin.js';
 import { initDatabase } from './database.js';
 import { initEmailService } from './email.js';
+import { setupTelegramBot } from './bot.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Trust proxy for production (required for secure cookies behind reverse proxy)
 app.set('trust proxy', 1);
@@ -109,7 +111,16 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📧 Mode: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📧 Mode: ${NODE_ENV}`);
+  
+  // Setup Telegram Bot in production mode (webhooks)
+  if (NODE_ENV === 'production') {
+    try {
+      setupTelegramBot(app);
+    } catch (error) {
+      console.error('Failed to setup Telegram bot:', error);
+    }
+  }
 });
 
 export default app;

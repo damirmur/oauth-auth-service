@@ -806,3 +806,23 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-top: 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#telegram-login-status {
+  text-align: center;
+}
+

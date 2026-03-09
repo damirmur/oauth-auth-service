@@ -41,7 +41,7 @@ npm run dev
 npm start
 ```
 
-Сервер запустится на http://localhost:3000
+Сервер запустится на http://localhost:3001
 
 ## 🔧 Конфигурация OAuth
 
@@ -50,17 +50,17 @@ npm start
 ### Google OAuth
 1. Перейдите в Google Cloud Console
 2. Создайте OAuth 2.0 credentials
-3. Добавьте `http://localhost:3000/auth/google/callback` в Redirect URIs
+3. Добавьте `http://localhost:3001/auth/google/callback` в Redirect URIs
 
 ### Facebook OAuth
 1. Перейдите в Facebook Developers
 2. Создайте App и добавьте OAuth
-3. Добавьте `http://localhost:3000/auth/facebook/callback` в Valid OAuth Redirect URIs
+3. Добавьте `http://localhost:3001/auth/facebook/callback` в Valid OAuth Redirect URIs
 
 ### VK OAuth
 1. Перейдите в VK My Apps
 2. Создайте приложение
-3. Добавьте `http://localhost:3000/auth/vk/callback` в Open API → Адреса сайта
+3. Добавьте `http://localhost:3001/auth/vk/callback` в Open API → Адреса сайта
 
 ### Telegram
 1. Создайте бота через @BotFather

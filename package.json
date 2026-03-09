@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "NODE_ENV=development node index.js"
+    "dev": "NODE_ENV=development node index.js",
+    "bot": "node bot.js",
+    "dev:all": "NODE_ENV=development node index.js & node bot.js"
   },
   "dependencies": {
     "express": "^4.21.0",
@@ -15,7 +17,8 @@
     "argon2": "^0.41.1",
     "dotenv": "^16.4.5",
     "express-session": "^1.18.0",
-    "nodemailer": "^6.9.14"
+    "nodemailer": "^6.9.14",
+    "node-telegram-bot-api": "^0.64.0"
   },
   "engines": {
     "node": ">=24.0.0"

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Telegram Login - Auth Service</title>
   <link rel="stylesheet" href="/style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <header class="header">
@@ -12,7 +13,7 @@
       <nav class="nav">
         <a href="/" class="logo">🔐 Auth Service</a>
         <div class="nav-menu">
-          <a href="/login" class="nav-link">Назад</a>
+          <a href="/" class="nav-link">Назад</a>
         </div>
       </nav>
     </div>
@@ -39,6 +40,7 @@
           
           <div id="telegram-login-status">
             <p>Ожидание авторизации...</p>
+            <div class="loading-spinner"></div>
           </div>
         </div>
       </div>
@@ -50,6 +52,58 @@
       <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
     </div>
   </footer>
+
+  <script>
+    // Check if we're running in Telegram WebApp
+    if (window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      
+      // Expand the web app to full height
+      tg.expand();
+      
+      // Get initData
+      const initData = tg.initData;
+      
+      if (initData) {
+        // Send initData to backend for authentication
+        fetch('/auth/telegram', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: 'initData=' + encodeURIComponent(initData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('telegram-login-status').innerHTML = 
+              '<p class="alert alert-success">✅ Успешная авторизация!</p>';
+            
+            // Send success message back to bot
+            tg.sendData(JSON.stringify({ success: true, redirect: data.redirect }));
+            
+            // Close web app after short delay
+            setTimeout(() => {
+              tg.close();
+            }, 1500);
+          } else {
+            document.getElementById('telegram-login-status').innerHTML = 
+              '<p class="alert alert-error">❌ Ошибка: ' + (data.error || 'Неизвестная ошибка') + '</p>';
+            
+            tg.sendData(JSON.stringify({ success: false, error: data.error }));
+          }
+        })
+        .catch(error => {
+          console.error('Auth error:', error);
+          document.getElementById('telegram-login-status').innerHTML = 
+            '<p class="alert alert-error">❌ Ошибка соединения</p>';
+        });
+      } else {
+        document.getElementById('telegram-login-status').innerHTML = 
+          '<p class="alert alert-error">❌ Не удалось получить данные Telegram</p>';
+      }
+    }
+  </script>
 </body>
 </html>
 
