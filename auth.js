@@ -101,7 +101,7 @@ export function updateUser(userId, data) {
     values.push(data.email_verified ? 1 : 0);
   }
   
-  fields.push('updated_at = datetime("now")');
+  fields.push("updated_at = datetime('now')");
   values.push(userId);
   
   const stmt = db.prepare(`

@@ -9,8 +9,19 @@ let transporter = null;
 
 // Initialize email service
 export async function initEmailService() {
-  if (process.env.NODE_ENV === 'production' && process.env.SMTP_HOST) {
-    // Production: real SMTP
+  if (process.env.NODE_ENV === 'production') {
+    // Production: use Postfix via sendmail
+    const sendmailPath = process.env.SENDMAIL_PATH || '/usr/sbin/sendmail';
+    transporter = nodemailer.createTransport({
+      sendmail: true,
+      sendmailPath: sendmailPath,
+      defaults: {
+        from: process.env.MAIL_FROM || 'noreply@localhost'
+      }
+    });
+    console.log('📧 Email service initialized with Postfix (sendmail)');
+  } else if (process.env.SMTP_HOST) {
+    // Development with custom SMTP
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -69,14 +80,16 @@ export async function sendEmail(to, subject, html, text = null) {
     return { success: true, devMode: true, email: devEmailRecord };
   }
   
-  // Production: send real email
+  // Production: send via Postfix/sendmail
   if (!transporter) {
     throw new Error('Email transporter not configured');
   }
   
+  const fromAddress = process.env.MAIL_FROM || 'noreply@localhost';
+  
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"Auth Service" <noreply@localhost>',
+      from: fromAddress,
       to: finalTo,
       subject,
       html,
@@ -95,7 +108,7 @@ export async function sendEmail(to, subject, html, text = null) {
 // Send verification email
 export async function sendVerificationEmail(email, name, code) {
   const subject = 'Подтверждение email';
-  const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${code}`;
+  const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${code}?email=${encodeURIComponent(email)}`;
   
   const html = `
     <!DOCTYPE html>
@@ -172,7 +185,7 @@ export async function sendLinkingEmail(email, name, code, provider) {
 // Send password reset email
 export async function sendPasswordResetEmail(email, name, code) {
   const subject = 'Восстановление пароля';
-  const resetUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/reset-password?code=${code}`;
+  const resetUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/reset-password?code=${code}&email=${encodeURIComponent(email)}`;
   
   const html = `
     <!DOCTYPE html>

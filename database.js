@@ -1,12 +1,19 @@
 import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const dbPath = join(__dirname, 'data', 'auth.db');
+const dataDir = join(__dirname, 'data');
+const dbPath = join(dataDir, 'auth.db');
 let db = null;
+
+// Ensure data directory exists
+if (!existsSync(dataDir)) {
+  mkdirSync(dataDir, { recursive: true });
+}
 
 export function getDb() {
   if (!db) {
@@ -27,8 +34,8 @@ export async function initDatabase() {
       email_verified INTEGER DEFAULT 0,
       name TEXT,
       image TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now')),
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
       role TEXT DEFAULT 'user'
     )
   `);
@@ -39,7 +46,7 @@ export async function initDatabase() {
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
       expires_at TEXT NOT NULL,
-      created_at TEXT DEFAULT (datetime('now')),
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
@@ -52,7 +59,7 @@ export async function initDatabase() {
       provider TEXT NOT NULL,
       provider_id TEXT,
       email TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
@@ -66,7 +73,7 @@ export async function initDatabase() {
       type TEXT NOT NULL,
       expires_at TEXT NOT NULL,
       used INTEGER DEFAULT 0,
-      created_at TEXT DEFAULT (datetime('now')),
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
@@ -81,7 +88,7 @@ export async function initDatabase() {
       code TEXT NOT NULL,
       expires_at TEXT NOT NULL,
       used INTEGER DEFAULT 0,
-      created_at TEXT DEFAULT (datetime('now'))
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
