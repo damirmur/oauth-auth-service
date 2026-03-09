@@ -125,28 +125,32 @@
       
       // Use ready() to ensure SDK is fully initialized
       tg.ready(() => {
-        console.log('Telegram WebApp ready');
-        console.log('initData after ready:', tg.initData ? 'present' : 'missing');
-        
-        // Small delay to ensure initData is populated
-        setTimeout(() => {
-          if (tg.initData) {
-            console.log('Calling performAuth');
-            performAuth();
-          } else {
-            // Retry after short delay if initData not available yet
-            setTimeout(() => {
-              console.log('Retry: initData:', tg.initData ? 'present' : 'missing');
-              if (tg.initData) {
-                performAuth();
-              } else {
-                document.getElementById('telegram-login-status').innerHTML = 
-                  '<p class="alert alert-error">❌ Не удалось получить данные Telegram. Попробуйте ещё раз открыть бота.</p>';
-              }
-            }, 1000);
-          }
-        }, 500);
+        console.log('Telegram WebApp ready callback');
+        checkAndAuth();
       });
+      
+      // Also check immediately in case already ready
+      if (tg.initData) {
+        console.log('initData already available immediately');
+        checkAndAuth();
+      }
+      
+      function checkAndAuth() {
+        console.log('checkAndAuth called, initData:', tg.initData ? 'present' : 'missing');
+        if (tg.initData) {
+          performAuth();
+        } else {
+          // Wait and retry
+          setTimeout(() => {
+            if (tg.initData) {
+              performAuth();
+            } else {
+              document.getElementById('telegram-login-status').innerHTML = 
+                '<p class="alert alert-error">❌ Не удалось получить данные Telegram</p>';
+            }
+          }, 500);
+        }
+      }
       
     } else {
       // Not running in Telegram - show helpful message
