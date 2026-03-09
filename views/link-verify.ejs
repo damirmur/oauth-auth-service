@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подтверждение привязки - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">Привязка аккаунта</h1>
+          
+          <div class="alert alert-info">
+            <p><%= message %></p>
+          </div>
+          
+          <form action="/link/confirm" method="POST" class="auth-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="email" value="<%= email %>">
+            
+            <div class="form-group">
+              <label for="code">Код подтверждения</label>
+              <input type="text" id="code" name="code" required class="form-input" placeholder="Введите 6-значный код">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Подтвердить</button>
+          </form>
+          
+          <div class="auth-links">
+            <a href="/login">Отмена</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

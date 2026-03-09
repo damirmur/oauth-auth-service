@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/" class="nav-link">Главная</a>
+          <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+            <a href="/admin" class="nav-link">Админка</a>
+            <a href="/admin/mail" class="nav-link">📧 Почта</a>
+          <% } %>
+          <form action="/logout" method="POST" class="nav-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-outline">Выход</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <% if (user && user.image) { %>
+            <img src="<%= user.image %>" alt="<%= user.name %>" class="avatar-img">
+          <% } else { %>
+            <div class="avatar-placeholder"><%= user && user.name ? user.name.charAt(0).toUpperCase() : '?' %></div>
+          <% } %>
+        </div>
+        <div class="profile-info">
+          <h1><%= user && user.name ? user.name : 'Пользователь' %></h1>
+          <p><%= user && user.email ? user.email : '' %></p>
+          <% if (user && user.role) { %>
+          <p>Роль: <span class="badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>"><%= user.role %></span></p>
+          <% } %>
+          <% if (user && !user.email_verified) { %>
+            <p class="text-warning">⚠️ Email не подтвержден</p>
+          <% } else if (user) { %>
+            <p class="text-success">✅ Email подтвержден</p>
+          <% } %>
+        </div>
+      </div>
+      
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error"><%- error %></div>
+      <% } %>
+      
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success"><%- success %></div>
+      <% } %>
+      
+      <div class="profile-sections">
+        <div class="card">
+          <h2 class="card-title">Редактирование профиля</h2>
+          <form action="/profile/update" method="POST" class="form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="form-group">
+              <label for="name">Имя</label>
+              <input type="text" id="name" name="name" value="<%= user && user.name ? user.name : '' %>" required class="form-input">
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </form>
+          
+          <% if (user && !user.email_verified) { %>
+            <form action="/verify/request" method="POST" class="form" style="margin-top: 15px;">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-secondary">Отправить код подтверждения</button>
+            </form>
+          <% } %>
+        </div>
+        
+        <div class="card">
+          <h2 class="card-title">Привязанные аккаунты</h2>
+          <div class="accounts-list">
+            <% if (authentications && authentications.length > 0) { %>
+              <% authentications.forEach(function(auth) { %>
+                <div class="account-item">
+                  <span class="account-icon">
+                    <% if (auth.provider === 'email') { %>📧<% } %>
+                    <% if (auth.provider === 'google') { %>🔵<% } %>
+                    <% if (auth.provider === 'facebook') { %>📘<% } %>
+                    <% if (auth.provider === 'vk') { %>🐛<% } %>
+                    <% if (auth.provider === 'telegram') { %>✈️<% } %>
+                  </span>
+                  <span class="account-provider"><%= auth.provider %></span>
+                  <span class="account-email"><%= auth.email || '—' %></span>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p class="text-muted">Нет привязанных аккаунтов</p>
+            <% } %>
+          </div>
+          
+          <div class="social-login" style="margin-top: 15px;">
+            <p class="social-title">Привязать новый аккаунт:</p>
+            <a href="/auth/google?redirect=/profile" class="social-btn social-google">Google</a>
+            <a href="/auth/facebook?redirect=/profile" class="social-btn social-facebook">Facebook</a>
+            <a href="/auth/vk?redirect=/profile" class="social-btn social-vk">VK</a>
+            <a href="/auth/telegram" class="social-btn social-telegram">Telegram</a>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2 class="card-title">Безопасность</h2>
+          <form action="/reset/request" method="POST" class="form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <p>Изменить пароль:</p>
+            <div class="form-group">
+              <label for="reset-email">Ваш email</label>
+              <input type="email" id="reset-email" name="email" value="<%= user && user.email ? user.email : '' %>" required class="form-input">
+            </div>
+            <button type="submit" class="btn btn-secondary">Отправить код для смены пароля</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

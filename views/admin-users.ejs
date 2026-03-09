@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пользователи - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/" class="nav-link">Главная</a>
+          <a href="/profile" class="nav-link">Профиль</a>
+          <a href="/admin" class="nav-link">Админка</a>
+          <form action="/logout" method="POST" class="nav-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-outline">Выход</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <h1>Пользователи</h1>
+      
+      <div class="mail-actions">
+        <a href="/admin" class="btn btn-secondary">← Назад к админке</a>
+      </div>
+      
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Роль</th>
+            <th>Подтвержден</th>
+            <th>Методов входа</th>
+            <th>Создан</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users && users.length > 0) { %>
+            <% users.forEach(function(user) { %>
+              <tr>
+                <td><code><%= user.id.substring(0, 8) %>...</code></td>
+                <td><%= user.name %></td>
+                <td><%= user.email %></td>
+                <td><span class="badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>"><%= user.role %></span></td>
+                <td><%= user.email_verified ? '✅' : '⚠️' %></td>
+                <td><%= user.auth_count %></td>
+                <td><%= new Date(user.created_at).toLocaleDateString('ru-RU') %></td>
+              </tr>
+            <%}); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center">Нет пользователей</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

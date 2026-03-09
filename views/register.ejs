@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/login" class="nav-link">Вход</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">Регистрация</h1>
+          
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error"><%- error %></div>
+          <% } %>
+          
+          <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success">
+              <p><%= typeof message !== 'undefined' ? message : 'Регистрация успешна!' %></p>
+              <p>Мы отправили код подтверждения на <strong><%= typeof email !== 'undefined' ? email : '' %></strong></p>
+              <% if (process.env.NODE_ENV !== 'production') { %>
+              <p>В режиме разработки письмо доступно в <a href="/admin/mail">админ-панели</a></p>
+              <% } %>
+            </div>
+          <% } else { %>
+            <form action="/register" method="POST" class="auth-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="hidden" name="redirect" value="<%= typeof redirect !== 'undefined' ? redirect : '/profile' %>">
+              
+              <div class="form-group">
+                <label for="name">Имя</label>
+                <input type="text" id="name" name="name" required class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required minlength="6" class="form-input">
+                <small class="form-hint">Минимум 6 символов</small>
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+            </form>
+          <% } %>
+          
+          <div class="auth-links">
+            <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+          </div>
+        </div>
+        
+        <div class="social-login">
+          <p class="social-title">или зарегистрируйтесь через</p>
+          
+          <a href="/auth/google?redirect=<%= encodeURIComponent(typeof redirect !== 'undefined' ? redirect : '/profile') %>" class="social-btn social-google">
+            <span class="social-icon">G</span> Google
+          </a>
+          
+          <a href="/auth/facebook?redirect=<%= encodeURIComponent(typeof redirect !== 'undefined' ? redirect : '/profile') %>" class="social-btn social-facebook">
+            <span class="social-icon">f</span> Facebook
+          </a>
+          
+          <a href="/auth/vk?redirect=<%= encodeURIComponent(typeof redirect !== 'undefined' ? redirect : '/profile') %>" class="social-btn social-vk">
+            <span class="social-icon">VK</span> VK
+          </a>
+          
+          <a href="/auth/telegram" class="social-btn social-telegram">
+            <span class="social-icon">✈️</span> Telegram
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

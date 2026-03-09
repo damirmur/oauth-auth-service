@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Почтовый ящик - Auth Service (Dev)</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/" class="nav-link">Главная</a>
+          <a href="/profile" class="nav-link">Профиль</a>
+          <a href="/admin" class="nav-link">Админка</a>
+          <form action="/logout" method="POST" class="nav-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-outline">Выход</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="dev-banner">
+        <h1>📧 Почтовый ящик разработчика</h1>
+        <p>Все отправленные письма перенаправляются сюда в режиме разработки</p>
+        <p><strong>Режим:</strong> <span class="badge badge-dev">Development</span></p>
+      </div>
+      
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      
+      <div class="mail-actions">
+        <a href="/admin" class="btn btn-secondary">← Назад к админке</a>
+        <form action="/admin/mail/clear" method="POST" class="inline-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn btn-danger" onclick="return confirm('Очистить все письма?')">Очистить все</button>
+        </form>
+      </div>
+      
+      <div class="mail-list">
+        <% if (emails && emails.length > 0) { %>
+          <table class="mail-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Кому (оригинал)</th>
+                <th>Тема</th>
+                <th>Отправлено</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% emails.forEach(function(email) { %>
+                <tr>
+                  <td><%= email.id %></td>
+                  <td><%= email.originalTo %></td>
+                  <td><%= email.subject %></td>
+                  <td><%= new Date(email.sentAt).toLocaleString('ru-RU') %></td>
+                  <td>
+                    <a href="/admin/mail/<%= email.id %>" class="btn btn-small">Просмотр</a>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <p>📭 Писем пока нет</p>
+            <p>Отправьте тестовое письмо через форму регистрации или восстановления пароля</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %> | 
+         <span class="badge badge-dev">Development Mode</span>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
+

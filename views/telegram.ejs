@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Login - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/login" class="nav-link">Назад</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">✈️ Telegram Login</h1>
+          
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error"><%= error %></div>
+          <% } %>
+          
+          <div class="telegram-info">
+            <p>Для входа через Telegram:</p>
+            <ol>
+              <li>Откройте бота <strong><%= botUsername %></strong></li>
+              <li>Отправьте команду <code>/start</code></li>
+              <li>Нажмите кнопку "Войти" в боте</li>
+            </ol>
+          </div>
+          
+          <div id="telegram-login-status">
+            <p>Ожидание авторизации...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

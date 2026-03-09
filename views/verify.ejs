@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подтверждение email - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <% if (success) { %>
+            <div class="alert alert-success">
+              <h2>✅ <%= message %></h2>
+              <% if (redirect) { %>
+                <p>Перенаправление через 3 секунды...</p>
+                <meta http-equiv="refresh" content="3;url=<%= redirect %>">
+                <a href="<%= redirect %>" class="btn btn-primary">Перейти сейчас</a>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="alert alert-error">
+              <h2>❌ Ошибка</h2>
+              <p><%= error %></p>
+            </div>
+          <% } %>
+          
+          <div class="auth-links">
+            <a href="/">На главную</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

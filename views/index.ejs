@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth Service - Главная</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <% if (user) { %>
+            <a href="/profile" class="nav-link">Профиль</a>
+            <% if (isAdmin) { %>
+              <a href="/admin" class="nav-link">Админка</a>
+              <a href="/admin/mail" class="nav-link">📧 Почта</a>
+            <% } %>
+            <form action="/logout" method="POST" class="nav-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-outline">Выход</button>
+            </form>
+          <% } else { %>
+            <a href="/login" class="nav-link">Вход</a>
+            <a href="/register" class="btn btn-primary">Регистрация</a>
+          <% } %>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="hero">
+        <h1 class="hero-title">🔐 Сервис аутентификации</h1>
+        
+        <% if (user) { %>
+          <div class="alert alert-success">
+            <p>Добро пожаловать, <strong><%= user.name %></strong>!</p>
+            <p>Ваш email: <%= user.email %></p>
+            <p>Роль: <span class="badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>"><%= user.role %></span></p>
+          </div>
+          <div class="hero-actions">
+            <a href="/profile" class="btn btn-primary btn-lg">Личный кабинет</a>
+          </div>
+        <% } else { %>
+          <p class="hero-subtitle">Безопасная система аутентификации с поддержкой:</p>
+          <ul class="feature-list">
+            <li>📧 Email + пароль</li>
+            <li>🔵 Google</li>
+            <li>📘 Facebook</li>
+            <li>🐛 VK</li>
+            <li>✈️ Telegram</li>
+          </ul>
+          <div class="hero-actions">
+            <a href="/register" class="btn btn-primary btn-lg">Начать</a>
+            <a href="/login" class="btn btn-outline btn-lg">Войти</a>
+          </div>
+        <% } %>
+      </div>
+      
+      <div class="info-cards">
+        <div class="card">
+          <h3>👤 Мульти-аккаунтинг</h3>
+          <p>Привяжите несколько социальных сетей к одному профилю</p>
+        </div>
+        <div class="card">
+          <h3>🔒 Безопасность</h3>
+          <p>Используем Argon2 для хэширования паролей</p>
+        </div>
+        <div class="card">
+          <h3>📧 Верификация</h3>
+          <p>Подтверждение email для безопасности</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %> | 
+         <span class="badge <%= process.env.NODE_ENV === 'production' ? 'badge-prod' : 'badge-dev' %>">
+           <%= process.env.NODE_ENV === 'production' ? 'Production' : 'Development' %>
+         </span>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
+

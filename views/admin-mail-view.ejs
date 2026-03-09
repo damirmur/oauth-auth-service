@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Просмотр письма - Auth Service (Dev)</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/" class="nav-link">Главная</a>
+          <a href="/profile" class="nav-link">Профиль</a>
+          <a href="/admin" class="nav-link">Админка</a>
+          <a href="/admin/mail" class="nav-link">📧 Почта</a>
+          <form action="/logout" method="POST" class="nav-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-outline">Выход</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="mail-view">
+        <div class="mail-view-header">
+          <a href="/admin/mail" class="btn btn-secondary">← Назад к списку</a>
+        </div>
+        
+        <div class="mail-meta">
+          <div class="mail-meta-item">
+            <strong>ID:</strong> <%= email.id %>
+          </div>
+          <div class="mail-meta-item">
+            <strong>Оригинальный получатель:</strong> <%= email.originalTo %>
+          </div>
+          <div class="mail-meta-item">
+            <strong>Фактический получатель:</strong> <%= email.to %>
+          </div>
+          <div class="mail-meta-item">
+            <strong>Тема:</strong> <%= email.subject %>
+          </div>
+          <div class="mail-meta-item">
+            <strong>Отправлено:</strong> <%= new Date(email.sentAt).toLocaleString('ru-RU') %>
+          </div>
+        </div>
+        
+        <div class="mail-content">
+          <h3>Содержание (HTML):</h3>
+          <div class="mail-html">
+            <%- email.html %>
+          </div>
+        </div>
+        
+        <div class="mail-content">
+          <h3>Содержание (Text):</h3>
+          <pre class="mail-text"><%= email.text %></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %> | 
+         <span class="badge badge-dev">Development Mode</span>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
+

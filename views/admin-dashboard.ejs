@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/" class="nav-link">Главная</a>
+          <a href="/profile" class="nav-link">Профиль</a>
+          <form action="/logout" method="POST" class="nav-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-outline">Выход</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <h1>Админ-панель</h1>
+      
+      <div class="admin-cards">
+        <div class="admin-card">
+          <h3>📧 Почтовый ящик</h3>
+          <p>Просмотр всех отправленных писем (режим разработки)</p>
+          <a href="/admin/mail" class="btn btn-primary">Открыть</a>
+        </div>
+        
+        <div class="admin-card">
+          <h3>👥 Пользователи</h3>
+          <p>Управление пользователями системы</p>
+          <a href="/admin/users" class="btn btn-primary">Список пользователей</a>
+        </div>
+      </div>
+      
+      <div class="info-section">
+        <h2>Информация о системе</h2>
+        <table class="info-table">
+          <tr>
+            <td>Режим работы:</td>
+            <td><span class="badge <%= isDev ? 'badge-dev' : 'badge-prod' %>"><%= isDev ? 'Development' : 'Production' %></span></td>
+          </tr>
+          <tr>
+            <td>Node.js:</td>
+            <td><%= process.version %></td>
+          </tr>
+          <tr>
+            <td>Версия приложения:</td>
+            <td>1.0.0</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

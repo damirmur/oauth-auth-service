@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Auth Service' %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <% if (typeof user !== 'undefined' && user) { %>
+            <a href="/profile" class="nav-link">Профиль</a>
+            <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+              <a href="/admin" class="nav-link">Админка</a>
+              <a href="/admin/mail" class="nav-link">📧 Почта</a>
+            <% } %>
+            <form action="/logout" method="POST" class="nav-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-outline">Выход</button>
+            </form>
+          <% } else { %>
+            <a href="/login" class="nav-link">Вход</a>
+            <a href="/register" class="btn btn-primary">Регистрация</a>
+          <% } %>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <%- body %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %> | 
+         <span class="badge <%= process.env.NODE_ENV === 'production' ? 'badge-prod' : 'badge-dev' %>">
+           <%= process.env.NODE_ENV === 'production' ? 'Production' : 'Development' %>
+         </span>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
+

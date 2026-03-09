@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+        <div class="nav-menu">
+          <a href="/register" class="btn btn-primary">Регистрация</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">Вход</h1>
+          
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error"><%= error %></div>
+          <% } %>
+          
+          <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success"><%= success.message %></div>
+          <% } %>
+          
+          <form action="/login" method="POST" class="auth-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="redirect" value="<%= typeof redirect !== 'undefined' ? redirect : '/profile' %>">
+            
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label for="password">Пароль</label>
+              <input type="password" id="password" name="password" required class="form-input">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+          </form>
+          
+          <div class="auth-links">
+            <a href="/reset/request">Забыли пароль?</a>
+          </div>
+        </div>
+        
+        <div class="social-login">
+          <p class="social-title">или войдите через</p>
+          
+          <a href="/auth/google?redirect=<%= encodeURIComponent(typeof redirect !== 'undefined' ? redirect : '/profile') %>" class="social-btn social-google">
+            <span class="social-icon">G</span> Google
+          </a>
+          
+          <a href="/auth/facebook?redirect=<%= encodeURIComponent(typeof redirect !== 'undefined' ? redirect : '/profile') %>" class="social-btn social-facebook">
+            <span class="social-icon">f</span> Facebook
+          </a>
+          
+          <a href="/auth/vk?redirect=<%= encodeURIComponent(typeof redirect !== 'undefined' ? redirect : '/profile') %>" class="social-btn social-vk">
+            <span class="social-icon">VK</span> VK
+          </a>
+          
+          <a href="/auth/telegram" class="social-btn social-telegram">
+            <span class="social-icon">✈️</span> Telegram
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+

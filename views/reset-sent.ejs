@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Код отправлен - Auth Service</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="logo">🔐 Auth Service</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">📧 Код отправлен</h1>
+          
+          <div class="alert alert-success">
+            <p>Инструкции по сбросу пароля отправлены на <strong><%= email %></strong></p>
+            <% if (process.env.NODE_ENV !== 'production') { %>
+              <p>В режиме разработки письмо доступно в <a href="/admin/mail">админ-панели</a></p>
+            <% } %>
+          </div>
+          
+          <div class="auth-links">
+            <a href="/login">Вернуться ко входу</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Auth Service &copy; <%= new Date().getFullYear() %></p>
+    </div>
+  </footer>
+</body>
+</html>
+
