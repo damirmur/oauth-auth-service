@@ -265,6 +265,73 @@ router.post('/verify/request', requireAuth, async (req, res) => {
 
 // ============ OAUTH ROUTES ============
 
+// Telegram login page (must be before /auth/:provider)
+router.get('/auth/telegram', (req, res) => {
+  res.render('telegram', { 
+    botUsername: process.env.TELEGRAM_BOT_USERNAME,
+    error: req.query.error 
+  });
+});
+
+// Telegram login callback (from bot)
+router.post('/auth/telegram', async (req, res) => {
+  try {
+    const { initData } = req.body;
+    
+    if (!initData) {
+      return res.status(400).json({ error: 'No init data' });
+    }
+    
+    // Parse initData
+    const params = new URLSearchParams(initData);
+    const telegramData = {};
+    for (const [key, value] of params) {
+      telegramData[key] = value;
+    }
+    
+    // Verify hash
+    if (!verifyTelegramData(telegramData)) {
+      return res.status(400).json({ error: 'Invalid hash' });
+    }
+    
+    const telegramId = telegramData.user_id;
+    const telegramUser = JSON.parse(telegramData.user);
+    
+    // Check if telegram is linked
+    const existingAuth = getAuthentication('telegram', telegramId);
+    
+    if (existingAuth) {
+      // Login
+      const user = getUserById(existingAuth.user_id);
+      const session = createSession(user.id);
+      req.session.userId = user.id;
+      req.session.sessionId = session.id;
+      req.session.isAdmin = user.role === 'admin';
+      
+      return res.json({ success: true, redirect: '/profile' });
+    }
+    
+    // Create new user or require linking
+    const user = createUser(
+      `telegram_${telegramId}@telegram.local`,
+      `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
+      telegramUser.photo_url
+    );
+    
+    addAuthentication(user.id, 'telegram', telegramId, null);
+    
+    const session = createSession(user.id);
+    req.session.userId = user.id;
+    req.session.sessionId = session.id;
+    req.session.isAdmin = user.role === 'admin';
+    
+    res.json({ success: true, redirect: '/profile' });
+  } catch (error) {
+    console.error('Telegram auth error:', error);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
 // Start OAuth flow
 router.get('/auth/:provider', (req, res) => {
   const { provider } = req.params;
