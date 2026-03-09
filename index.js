@@ -33,19 +33,29 @@ function csrfToken(req, res, next) {
 
 // CSRF validation middleware
 function validateCsrf(req, res, next) {
-  // Skip CSRF for GET requests, POST with form submission will validate
+  // Skip CSRF for GET requests
   if (req.method === 'GET') {
     return next();
   }
-  
+
+  // Skip CSRF for Telegram webhook
+  if (req.path && req.path.startsWith('/telegraf/')) {
+    return next();
+  }
+
+  // Skip CSRF for Telegram auth endpoint
+  if (req.path === '/auth/telegram' && req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+    return next();
+  }
+
   const submittedToken = req.body._csrf || req.headers['x-csrf-token'];
-  
+
   if (!submittedToken || submittedToken !== req.session.csrfToken) {
-    return res.status(403).render('error', { 
-      error: 'Ошибка безопасности: неверный токен CSRF' 
+    return res.status(403).render('error', {
+      error: 'Ошибка безопасности: неверный токен CSRF'
     });
   }
-  
+
   next();
 }
 

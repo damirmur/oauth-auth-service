@@ -1,43 +1,38 @@
-# Telegram Login Fix - Completed
+# Telegram Login Fix - COMPLETED
 
-## Problem
-When user clicks "Войти" button in Telegram bot, the web app at `/auth/telegram` shows error:
-"❌ Не удалось получить данные Telegram"
+## Problems Found & Fixed
 
-## Root Cause
-The JavaScript in `views/telegram.ejs` checked for `tg.initData` immediately on page load, but:
-1. Telegram WebApp SDK may not be fully initialized
-2. Missing proper ready event handling
-3. No retry logic for initData
+### 1. CSRF Middleware Blocking Webhook (Main Issue)
+**Problem**: CSRF validation was blocking Telegram webhook requests (`/telegraf/...`) and Telegram auth POST requests, causing the bot to not respond to `/start` command.
 
-## Fixes Applied
+**Fix**: Modified `index.js` to skip CSRF validation for:
+- Telegram webhook paths (`/telegraf/*`)
+- Telegram auth endpoint (`/auth/telegram` with form-urlencoded content)
 
-### 1. views/telegram.ejs (Frontend)
-- Added proper check for `window.Telegram && window.Telegram.WebApp`
-- Used `tg.ready()` callback to ensure SDK is fully initialized
-- Added retry logic with timeout for initData
-- Added fallback message for users not running in Telegram
-- Improved error handling and user feedback
+### 2. Telegram WebApp Initialization (Secondary Issue)
+**Problem**: The JavaScript in `views/telegram.ejs` was checking for `tg.initData` immediately on page load, but the Telegram WebApp SDK might not be fully initialized yet.
 
-### 2. routes/auth.js (Backend)
-- Added debug logging for troubleshooting
-- Added detailed error messages
+**Fix**: Modified `views/telegram.ejs` to:
+- Use `tg.ready()` callback to ensure SDK is fully initialized
+- Add retry logic with delays for getting initData
+- Add proper null checks
+- Add helpful message for when not running in Telegram
 
-## Manual Verification Required
+## Files Modified
 
-1. **Check Environment Variables** - Ensure in `.env`:
-   - `TELEGRAM_BOT_TOKEN` is set
-   - `TELEGRAM_BOT_USERNAME` is set (e.g., `astro3dAI_bot`)
-   - `BASE_URL` points to production URL (e.g., `https://astro3d.ru`)
+1. **index.js** - Added CSRF exceptions for Telegram paths
+2. **views/telegram.ejs** - Improved Telegram WebApp initialization
 
-2. **Rebuild/Deploy** - Restart the server:
-   ```bash
-   npm start
-   ```
+## Deployment
 
-3. **Test Flow**:
-   - Open Telegram bot
-   - Send /start
-   - Click "🚀 Войти" button
-   - Check server logs for debugging info
+After restarting the server (`npm start`), the bot should:
+1. Respond to `/start` command with the "Войти" button
+2. Successfully authenticate users when they click the button
+
+## Verification Steps
+
+1. Restart the server in production mode
+2. Open Telegram bot and send `/start`
+3. Click the "Войти" button
+4. Verify authentication works
 

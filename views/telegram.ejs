@@ -54,19 +54,31 @@
   </footer>
 
   <script>
+    // Debug: Log when script starts
+    console.log('Telegram auth page loaded');
+    
     // Check if we're running in Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
+      
+      console.log('Telegram WebApp detected');
+      console.log('initData available:', !!tg.initData);
+      console.log('initData length:', tg.initData ? tg.initData.length : 0);
       
       // Function to perform authentication
       function performAuth() {
         const initData = tg.initData;
         
+        console.log('performAuth called, initData:', initData ? 'present' : 'missing');
+        
         if (!initData) {
           document.getElementById('telegram-login-status').innerHTML = 
-            '<p class="alert alert-error">❌ Не удалось получить данные Telegram</p>';
+            '<p class="alert alert-error">❌ Не удалось получить данные Telegram (initData пуст)</p>';
           return;
         }
+        
+        document.getElementById('telegram-login-status').innerHTML = 
+          '<p>Выполняется авторизация...</p><div class="loading-spinner"></div>';
         
         // Send initData to backend for authentication
         fetch('/auth/telegram', {
@@ -76,8 +88,12 @@
           },
           body: 'initData=' + encodeURIComponent(initData)
         })
-        .then(response => response.json())
+        .then(response => {
+          console.log('Response status:', response.status);
+          return response.json();
+        })
         .then(data => {
+          console.log('Auth response:', data);
           if (data.success) {
             document.getElementById('telegram-login-status').innerHTML = 
               '<p class="alert alert-success">✅ Успешная авторизация!</p>';
@@ -99,35 +115,42 @@
         .catch(error => {
           console.error('Auth error:', error);
           document.getElementById('telegram-login-status').innerHTML = 
-            '<p class="alert alert-error">❌ Ошибка соединения</p>';
+            '<p class="alert alert-error">❌ Ошибка соединения: ' + error.message + '</p>';
         });
       }
       
       // Initialize - expand and wait for ready
       tg.expand();
+      console.log('WebApp expanded');
       
       // Use ready() to ensure SDK is fully initialized
       tg.ready(() => {
+        console.log('Telegram WebApp ready');
+        console.log('initData after ready:', tg.initData ? 'present' : 'missing');
+        
         // Small delay to ensure initData is populated
         setTimeout(() => {
           if (tg.initData) {
+            console.log('Calling performAuth');
             performAuth();
           } else {
             // Retry after short delay if initData not available yet
             setTimeout(() => {
+              console.log('Retry: initData:', tg.initData ? 'present' : 'missing');
               if (tg.initData) {
                 performAuth();
               } else {
                 document.getElementById('telegram-login-status').innerHTML = 
-                  '<p class="alert alert-error">❌ Не удалось получить данные Telegram. Попробуйте ещё раз.</p>';
+                  '<p class="alert alert-error">❌ Не удалось получить данные Telegram. Попробуйте ещё раз открыть бота.</p>';
               }
-            }, 500);
+            }, 1000);
           }
-        }, 100);
+        }, 500);
       });
       
     } else {
       // Not running in Telegram - show helpful message
+      console.log('Not running in Telegram WebApp');
       document.getElementById('telegram-login-status').innerHTML = 
         '<p class="alert alert-error">⚠️ Авторизация через Telegram работает только внутри бота</p>';
     }
