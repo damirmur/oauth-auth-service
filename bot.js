@@ -125,12 +125,15 @@ function runBot(bot) {
 export function setupTelegramBot(expressApp) {
   const webhookPath = '/telegraf/' + TOKEN;
   
-  const bot = new TelegramBot(TOKEN, { webHook: { port: process.env.PORT || 3000 } });
+  // Create bot without webHook option - we'll set webhook URL explicitly
+  const bot = new TelegramBot(TOKEN);
   
-  bot.setWebHook(`${BASE_URL}${webhookPath}`).then(() => {
-    console.log(`✅ Webhook set to: ${BASE_URL}${webhookPath}`);
+  // Set the webhook URL
+  const webhookUrl = `${BASE_URL}${webhookPath}`;
+  bot.setWebHook(webhookUrl).then(() => {
+    console.log(`✅ Webhook set to: ${webhookUrl}`);
   }).catch(err => {
-    console.error('Failed to set webhook:', err);
+    console.error('Failed to set webhook:', err.message);
   });
   
   // Add webhook route to existing Express app
@@ -140,7 +143,7 @@ export function setupTelegramBot(expressApp) {
     res.send('OK');
   });
   
-  console.log(`✅ Bot webhook integrated with main server`);
+  console.log(`✅ Bot webhook integrated with main server at ${webhookUrl}`);
   runBot(bot);
   
   return bot;
