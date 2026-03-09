@@ -17,6 +17,9 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for production (required for secure cookies behind reverse proxy)
+app.set('trust proxy', 1);
+
 // Generate CSRF token
 function csrfToken(req, res, next) {
   if (!req.session.csrfToken) {
@@ -50,13 +53,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, 'public')));
 
 // Session configuration
+const isProduction = process.env.NODE_ENV === 'production';
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     httpOnly: true,
+    sameSite: 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   }
 }));
