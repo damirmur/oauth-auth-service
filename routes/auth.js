@@ -279,6 +279,7 @@ router.post('/auth/telegram', async (req, res) => {
     const { initData } = req.body;
     
     if (!initData) {
+      console.error('Telegram auth error: No initData received');
       return res.status(400).json({ error: 'No init data' });
     }
     
@@ -289,8 +290,12 @@ router.post('/auth/telegram', async (req, res) => {
       telegramData[key] = value;
     }
     
+    // Debug: log received data keys (not values for security)
+    console.log('Telegram auth attempt - keys:', Object.keys(telegramData));
+    
     // Verify hash
     if (!verifyTelegramData(telegramData)) {
+      console.error('Telegram auth error: Invalid hash');
       return res.status(400).json({ error: 'Invalid hash' });
     }
     
@@ -308,6 +313,7 @@ router.post('/auth/telegram', async (req, res) => {
       req.session.sessionId = session.id;
       req.session.isAdmin = user.role === 'admin';
       
+      console.log(`Telegram login success: user ${user.id} (${user.email})`);
       return res.json({ success: true, redirect: '/profile' });
     }
     
@@ -325,10 +331,11 @@ router.post('/auth/telegram', async (req, res) => {
     req.session.sessionId = session.id;
     req.session.isAdmin = user.role === 'admin';
     
+    console.log(`Telegram new user created: ${user.id}`);
     res.json({ success: true, redirect: '/profile' });
   } catch (error) {
     console.error('Telegram auth error:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    res.status(500).json({ error: 'Authentication failed: ' + error.message });
   }
 });
 

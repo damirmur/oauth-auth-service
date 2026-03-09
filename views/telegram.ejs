@@ -55,16 +55,19 @@
 
   <script>
     // Check if we're running in Telegram WebApp
-    if (window.Telegram.WebApp) {
+    if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
       
-      // Expand the web app to full height
-      tg.expand();
-      
-      // Get initData
-      const initData = tg.initData;
-      
-      if (initData) {
+      // Function to perform authentication
+      function performAuth() {
+        const initData = tg.initData;
+        
+        if (!initData) {
+          document.getElementById('telegram-login-status').innerHTML = 
+            '<p class="alert alert-error">❌ Не удалось получить данные Telegram</p>';
+          return;
+        }
+        
         // Send initData to backend for authentication
         fetch('/auth/telegram', {
           method: 'POST',
@@ -98,10 +101,35 @@
           document.getElementById('telegram-login-status').innerHTML = 
             '<p class="alert alert-error">❌ Ошибка соединения</p>';
         });
-      } else {
-        document.getElementById('telegram-login-status').innerHTML = 
-          '<p class="alert alert-error">❌ Не удалось получить данные Telegram</p>';
       }
+      
+      // Initialize - expand and wait for ready
+      tg.expand();
+      
+      // Use ready() to ensure SDK is fully initialized
+      tg.ready(() => {
+        // Small delay to ensure initData is populated
+        setTimeout(() => {
+          if (tg.initData) {
+            performAuth();
+          } else {
+            // Retry after short delay if initData not available yet
+            setTimeout(() => {
+              if (tg.initData) {
+                performAuth();
+              } else {
+                document.getElementById('telegram-login-status').innerHTML = 
+                  '<p class="alert alert-error">❌ Не удалось получить данные Telegram. Попробуйте ещё раз.</p>';
+              }
+            }, 500);
+          }
+        }, 100);
+      });
+      
+    } else {
+      // Not running in Telegram - show helpful message
+      document.getElementById('telegram-login-status').innerHTML = 
+        '<p class="alert alert-error">⚠️ Авторизация через Telegram работает только внутри бота</p>';
     }
   </script>
 </body>

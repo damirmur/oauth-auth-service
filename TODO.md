@@ -1,70 +1,43 @@
-# TODO: Add Telegram Bot with Login Button ✅ DONE
+# Telegram Login Fix - Completed
 
 ## Problem
-The user reports that there's no "Login" button in the astro3dAI_bot Telegram bot.
+When user clicks "Войти" button in Telegram bot, the web app at `/auth/telegram` shows error:
+"❌ Не удалось получить данные Telegram"
 
-## Analysis
-- Backend authentication `/auth/telegram` is implemented ✓
-- Frontend page `views/telegram.ejs` exists ✓
-- **Missing**: Telegram Bot code that shows the "Войти" button
+## Root Cause
+The JavaScript in `views/telegram.ejs` checked for `tg.initData` immediately on page load, but:
+1. Telegram WebApp SDK may not be fully initialized
+2. Missing proper ready event handling
+3. No retry logic for initData
 
-## Plan
-1. Create `bot.js` - Telegram Bot using node-telegram-bot-api
-2. Update `package.json` - Add node-telegram-bot-api dependency
-3. Update `.env.example` - Add TELEGRAM_BOT_TOKEN documentation
+## Fixes Applied
 
-## Implementation Steps ✅ COMPLETED
-- [x] 1. Create bot.js with /start command and inline "Войти" button
-- [x] 2. Update package.json with node-telegram-bot-api
-- [x] 3. Add bot start script
-- [x] 4. TELEGRAM_BOT_TOKEN already exists in .env.example ✓
-- [x] 5. Install npm dependencies
+### 1. views/telegram.ejs (Frontend)
+- Added proper check for `window.Telegram && window.Telegram.WebApp`
+- Used `tg.ready()` callback to ensure SDK is fully initialized
+- Added retry logic with timeout for initData
+- Added fallback message for users not running in Telegram
+- Improved error handling and user feedback
 
-## How to Run
-```bash
-# Terminal 1 - Start the web server
-npm run dev
+### 2. routes/auth.js (Backend)
+- Added debug logging for troubleshooting
+- Added detailed error messages
 
-# Terminal 2 - Start the bot
-npm run bot
+## Manual Verification Required
 
-# Or run both together
-npm run dev:all
-```
+1. **Check Environment Variables** - Ensure in `.env`:
+   - `TELEGRAM_BOT_TOKEN` is set
+   - `TELEGRAM_BOT_USERNAME` is set (e.g., `astro3dAI_bot`)
+   - `BASE_URL` points to production URL (e.g., `https://astro3d.ru`)
 
-## What was created
-- **bot.js**: Telegram bot with /start command and "Войти" button using Web App
-- Updated **package.json**: Added node-telegram-bot-api and scripts
-- Updated **views/telegram.ejs**: Added Telegram Web App JS SDK integration for authentication
-- Updated **public/style.css**: Added loading spinner styles
+2. **Rebuild/Deploy** - Restart the server:
+   ```bash
+   npm start
+   ```
 
-## Setup Required
-1. Make sure `TELEGRAM_BOT_TOKEN` is set in your `.env` file
-2. Set `BASE_URL` to your public URL (for production)
-3. Configure your bot's Menu Button → Web App in @BotFather
-
-## Production Setup
-
-### Environment Variables (.env)
-```
-NODE_ENV=production
-BASE_URL=https://your-domain.com
-PORT=3000
-TELEGRAM_BOT_TOKEN=your_bot_token
-```
-
-### Running in Production
-```bash
-npm start
-```
-
-The bot will automatically start in webhook mode when `NODE_ENV=production`.
-
-### First Time Setup (Telegram)
-1. Open @BotFather in Telegram
-2. Select your bot
-3. Go to **Menu Button** → **Configure**
-4. Choose **Web App** and enter: `https://your-domain.com/auth/telegram`
-
-Or simply use the inline button "🚀 Войти" that the bot sends on /start command.
+3. **Test Flow**:
+   - Open Telegram bot
+   - Send /start
+   - Click "🚀 Войти" button
+   - Check server logs for debugging info
 
